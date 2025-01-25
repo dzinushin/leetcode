@@ -1,45 +1,50 @@
+data class TestCase(
+        val input: IntArray, // Входной массив
+        val expectedOutput: IntArray // Ожидаемый результат
+)
+
+fun testRemoveDuplicates(testCases: Array<TestCase>) {
+    var countFailed = 0
+    for ((index, testCase) in testCases.withIndex()) {
+        val inputCopy = testCase.input.copyOf() // Создаем копию массива, чтобы не менять оригинал
+        val resultSize = removeDuplicates(inputCopy)
+
+        val resultArray =
+                inputCopy.take(resultSize).toIntArray() // Берем первые resultSize элементов
+        val isCorrect = resultArray.contentEquals(testCase.expectedOutput)
+        if (!isCorrect) countFailed++
+
+        println("Test case #$index:")
+        println("Input: [ ${testCase.input.joinToString()} ]")
+        println("Expected: [ ${testCase.expectedOutput.joinToString()} ]")
+        println("Actual: [ ${resultArray.joinToString()} ]")
+        println("Result: ${if (isCorrect) "PASS" else "***FAIL***"}")
+        println()
+    }
+    if (countFailed > 0) println("**** Failed $countFailed out of ${testCases.size} test cases")
+    else println("All test cases passed")
+}
+
 fun main() {
-    test1()
-    test2()
-    test3()
-    test4()
-}
-
-fun pretyPrint(nums: IntArray, k: Int) {
-    println("k = $k nums = [ ${nums.take(k).joinToString()} ]")
-}
-
-fun test1() {
-    val nums = intArrayOf(1, 1, 2)
-    val k = removeDuplicates(nums)
-    pretyPrint(nums, k)
-}
-
-fun test2() {
-    val nums = intArrayOf(0, 0, 1, 1, 1, 2, 2, 3, 3, 4)
-    val k = removeDuplicates(nums)
-    pretyPrint(nums, k)
-}
-
-fun test3() {
-    val nums = intArrayOf(1)
-    val k = removeDuplicates(nums)
-    pretyPrint(nums, k)
-}
-
-fun test4() {
-    val nums = intArrayOf()
-    val k = removeDuplicates(nums)
-    println("k = $k nums = ${nums.take(k).joinToString()}")
+    val testCases =
+            arrayOf(
+                    TestCase(intArrayOf(1, 1, 2), intArrayOf(1, 2)), // Убираем дубликаты
+                    TestCase(
+                            intArrayOf(0, 0, 1, 1, 2, 2, 3, 3, 4),
+                            intArrayOf(0, 1, 2, 3, 4)
+                    ), // Пример длинного массива
+                    TestCase(intArrayOf(), intArrayOf()), // Пустой массив
+                    TestCase(intArrayOf(1), intArrayOf(1)), // Один элемент
+                    TestCase(intArrayOf(1, 1, 1, 1), intArrayOf(1)) // Все одинаковые
+            )
+    testRemoveDuplicates(testCases)
 }
 
 fun removeDuplicates(nums: IntArray): Int {
-    val size = nums.size
-    if (size == 0) {
-        return 0
-    }
+    if (nums.isEmpty()) return 0
+
     var k = 1
-    for (i in 1..size - 1) {
+    for (i in 1 until nums.size) {
         if (nums[i] != nums[i - 1]) {
             nums[k] = nums[i]
             k++
